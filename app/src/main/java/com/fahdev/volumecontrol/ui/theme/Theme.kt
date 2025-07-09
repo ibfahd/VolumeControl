@@ -26,6 +26,7 @@ private val DarkColorScheme = darkColorScheme(
     onTertiary = TextPrimary,
     onBackground = TextPrimary,
     onSurface = TextPrimary,
+    surfaceVariant = ProgressBackground
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -37,7 +38,7 @@ private val LightColorScheme = lightColorScheme(
 @Composable
 fun VolumeControlTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = false,
+    dynamicColor: Boolean = true, // Enabled by default
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {

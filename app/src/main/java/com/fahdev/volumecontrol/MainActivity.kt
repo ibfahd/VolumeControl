@@ -3,6 +3,7 @@ package com.fahdev.volumecontrol
 import android.content.Context
 import android.media.AudioManager
 import android.os.Bundle
+import android.view.HapticFeedbackConstants
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
@@ -11,12 +12,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.tooling.preview.Preview
 import com.fahdev.volumecontrol.ui.theme.VolumeControlTheme
 
 class MainActivity : ComponentActivity() {
@@ -50,6 +52,7 @@ fun VolumeControlScreen() {
         audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
     }
 
+    val view = LocalView.current
     val adjustVolume = { direction: Int ->
         audioManager.adjustStreamVolume(
             AudioManager.STREAM_MUSIC,
@@ -57,6 +60,7 @@ fun VolumeControlScreen() {
             AudioManager.FLAG_SHOW_UI
         )
         currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
+        view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
     }
 
     Column(
@@ -69,10 +73,10 @@ fun VolumeControlScreen() {
 
         // App Title
         Text(
-            text = "Volume Control",
+            text = stringResource(id = R.string.app_name),
             fontSize = 32.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.White,
+            color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.padding(bottom = 48.dp)
         )
 
@@ -88,7 +92,7 @@ fun VolumeControlScreen() {
             text = "$currentVolume / $maxVolume",
             fontSize = 28.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.White,
+            color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
@@ -99,8 +103,8 @@ fun VolumeControlScreen() {
                 .width(300.dp)
                 .height(12.dp)
                 .padding(bottom = 48.dp),
-            color = Color(0xFF4CAF50),
-            trackColor = Color(0xFF3d3d3d)
+            color = MaterialTheme.colorScheme.primary,
+            trackColor = MaterialTheme.colorScheme.surfaceVariant
         )
 
         // Button Container
@@ -112,6 +116,7 @@ fun VolumeControlScreen() {
             // Volume Down Button
             VolumeButton(
                 text = "−",
+                contentDescription = "Volume Down",
                 enabled = currentVolume > 0,
                 onClick = { adjustVolume(AudioManager.ADJUST_LOWER) }
             )
@@ -119,6 +124,7 @@ fun VolumeControlScreen() {
             // Volume Up Button
             VolumeButton(
                 text = "+",
+                contentDescription = "Volume Up",
                 enabled = currentVolume < maxVolume,
                 onClick = { adjustVolume(AudioManager.ADJUST_RAISE) }
             )
@@ -129,6 +135,7 @@ fun VolumeControlScreen() {
 @Composable
 fun VolumeButton(
     text: String,
+    contentDescription: String,
     enabled: Boolean,
     onClick: () -> Unit
 ) {
@@ -138,21 +145,23 @@ fun VolumeButton(
         modifier = Modifier.size(120.dp),
         shape = CircleShape,
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color(0xFF2d2d2d),
-            contentColor = Color.White,
-            disabledContainerColor = Color(0xFF1a1a1a),
-            disabledContentColor = Color(0xFF666666)
+            containerColor = MaterialTheme.colorScheme.surface,
+            contentColor = MaterialTheme.colorScheme.onSurface,
+            disabledContainerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f),
+            disabledContentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
         ),
         elevation = ButtonDefaults.buttonElevation(
             defaultElevation = 8.dp,
             pressedElevation = 4.dp,
             disabledElevation = 0.dp
-        )
+        ),
+        contentPadding = PaddingValues(0.dp)
     ) {
         Text(
             text = text,
             fontSize = 48.sp,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(bottom = 4.dp)
         )
     }
 }
